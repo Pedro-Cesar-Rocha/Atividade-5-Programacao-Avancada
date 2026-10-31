@@ -1,30 +1,38 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:atividade5/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('Cadastra produto e mantém os existentes', (tester) async {
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Smartphone'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    expect(find.text('Cadastrar Produto'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextFormField).at(0), 'Bola');
+    await tester.enterText(find.byType(TextFormField).at(1), '49,90');
+    await tester.tap(find.byType(DropdownButton<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Esportes').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cadastrar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Bola'), findsOneWidget);
+    expect(find.text('Smartphone'), findsOneWidget);
+    expect(find.byIcon(Icons.sports_soccer), findsOneWidget);
+  });
+
+  testWidgets('Comprar mostra SnackBar', (tester) async {
+    await tester.pumpWidget(const MyApp());
+
+    await tester.tap(find.text('Comprar').first);
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Smartphone foi adicionado ao carrinho'), findsOneWidget);
   });
 }
